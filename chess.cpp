@@ -9,7 +9,7 @@ class Chess {
     vector<string> action;
     string actionInput;
     
-    int count1, count2;
+    int countA, countB;
     
     public:
     Chess() {
@@ -19,7 +19,7 @@ class Chess {
         }
         start = 0, end = 4;
         turn = 0;
-        count1 = 5, count2=5;
+        countA = 5, countB=5;
     }
     
     void getInput() {
@@ -29,7 +29,7 @@ class Chess {
         for(int i=0;i<5;++i) {
             cout<<"Pawn "<<i+1<<": ";
             cin>>input;
-            auto it = find_if(grid[0].begin(), grid[0].end(), [input](const pair<string, int>& p){
+            auto it = find_if(grid[0].begin(), grid[0].end(), [](const pair<int>& p){
                 return p.first == input;
             }); 
             if(it != grid[0].end()){
@@ -69,84 +69,134 @@ class Chess {
         size_t pos = 0;
         string token;
         vector<string> action;
-        while ((pos = s.find(delimiter)) != std::string::npos) {
+        while ((pos = s.find(":")) != std::string::npos) {
             token = s.substr(0, pos);
             action.push_back(token);
-            s.erase(0, pos + delimiter.length());
+            s.erase(0, pos + 1);
         }
         action.push_back(s);
         return action;
     }
     
     void play() {
+        prev: 
         cout<<"User "<<turn<<", enter your action: ";
         cin>>actionInput;
         action = getAction(actionInput);
         
         int curX=0, curY=0;
+        char move = action[1].c_str()[0];
         for(int i=start;i<=end;++i)
-            for(int i=start;i<=end;++i)
+            for(int j=start;j<=end;++j)
                 if(grid[i][j].first == action[0]) {
                     curX = i;
                     curY = j;
                 }
-        switch(action[1]) {
-            case 'L':   if(curY-1 < start)
-                            cout<<"Error move";
-                            //go back here
+        bool b;
+        switch(move) {
+            case 'l':
+            case 'L':   if(curY-1 < start) {
+                            cout<<"Out of Bounds. Invalid Move!"<<endl;
+                            goto prev;
+                        }           
                             
-                        if(grid[curX][curY-1].second == turn)
-                            cout<<"Same player character. Invalid Move!";
-                            
-                        if(grid[curX][curY-1].second == !turn)
-                            cout<<"User "<<turn<<" has killed!";
-                            //check if same also
-                            
-                            
+                        if(grid[curX][curY-1].second == turn) {
+                            cout<<"Same player character. Invalid Move!"<<endl;
+                            goto prev;
+                        }
+                         
+                        b = grid[curX][curY-1].second == !turn; 
                         grid[curX][curY-1] = {grid[curX][curY].first, turn};
                         grid[curX][curY] = {"__", -1};
+                        printGrid();  
+                        
+                        if(b) {
+                            cout<<"User "<<turn<<" has killed!"<<endl;
+                            turn? countA-- : countB--;
+                        }
+                      
                         break;
-            case 'R':   if(curY+1 > end)
-                            cout<<"Error move";
-                            //go back here
+             
+            case 'r':           
+            case 'R':   if(curY+1 > end) {
+                            cout<<"Out of Bounds. Invalid Move!"<<endl;
+                            goto prev;
+                        }       
                             
-                        if(grid[curX][curY-1].second == turn)
-                            cout<<"Same player character. Invalid Move!";
-                            
-                        if(grid[curX][curY+1].second == !turn)
-                            cout<<"User "<<turn<<" has killed!";
-                            
-                            
+                        if(grid[curX][curY+1].second == turn) {
+                            cout<<"Same player character. Invalid Move!"<<endl;
+                            goto prev;
+                        }
+                          
+                        b = grid[curX][curY+1].second == !turn;
                         grid[curX][curY+1] = {grid[curX][curY].first, turn};
                         grid[curX][curY] = {"__", -1};
+                        printGrid();    
+                        
+                        if(b) {
+                            cout<<"User "<<turn<<" has killed!"<<endl;
+                            turn? countA-- : countB--;
+                        }
+                            
                         break;
-            case 'F':   if(curX-1 < start)
-                            cout<<"Error move";
-                            //go back here
+              
+            case 'f':          
+            case 'F':   if(curX-1 < start) {
+                            cout<<"Out of Bounds. Invalid Move!"<<endl;
+                            goto prev;
+                        }
                             
-                        if(grid[curX][curY-1].second == turn)
-                            cout<<"Same player character. Invalid Move!";
-                            
-                        if(grid[curX-1][curY].second == !turn)
-                            cout<<"User "<<turn<<" has killed!";
-                            
+                        if(grid[curX-1][curY].second == turn) {
+                            cout<<"Same player character. Invalid Move!"<<endl;
+                            goto prev;
+                        }
+                          
+                        b = grid[curX-1][curY].second == !turn;
                         grid[curX-1][curY] = {grid[curX][curY].first, turn};
-                        grid[curX][curY] = {"__", -1};
+                        grid[curX][curY] = {"__", -1};  
+                        printGrid(); 
+                        
+                        if(b) {
+                            cout<<"User "<<turn<<" has killed!"<<endl;
+                            turn? countA-- : countB--;
+                        }
+                        
                         break;
-            case 'L':   if(curX-+1 > end)
-                            cout<<"Error move";
-                            //go back here
+            
+            case 'b':            
+            case 'B':   if(curX-+1 > end) {
+                            cout<<"Out of Bounds. Invalid Move!"<<endl;
+                            goto prev;
+                        }
                             
-                        if(grid[curX][curY-1].second == turn)
-                            cout<<"Same player character. Invalid Move!";
-                            
-                        if(grid[curX][curY].second == !turn)
-                            cout<<"User "<<turn<<" has killed!";
+                        if(grid[curX+1][curY].second == turn) {
+                            cout<<"Same player character. Invalid Move!"<<endl;
+                            goto prev;
+                        }
+                        
+                        b = grid[curX+1][curY].second == !turn;
                         grid[curX+1][curY] = {grid[curX][curY].first, turn};
                         grid[curX][curY] = {"__", -1};
+                        printGrid();    
+                        
+                        if(b) {
+                            cout<<"User "<<turn<<" has killed!"<<endl;
+                            turn? countA-- : countB--;
+                        }
+                        
                         break;
         }
+        if(countA == 0) {
+            cout<<"Congratulations! Player 2 has won the game.";
+            exit(0);
+        }
+        else if(countB == 0) {
+            cout<<"Congratulations! Player 1 has won the game.";
+            exit(0);
+        }
         
+        turn = !turn;
+        goto prev;
         
     }
 };
