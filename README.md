@@ -5,6 +5,8 @@
   
 Each character has a name and the H value corresponds to the character type     
 ie H0: Pawn(Hero0), H1: Hero1, H2: Hero2, ...     
+
+
 Main Grid:   
 <img src = "https://user-images.githubusercontent.com/53508807/189490022-d526ed4e-e7ba-43a3-bb20-d27acbe119f1.PNG" width="500">   
 
